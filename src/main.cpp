@@ -3,14 +3,7 @@
 #include <tetris.h>
 #include <config.h>
 
-volatile bool gameOverFlag = false;
 
-//Handling buttons
-volatile bool isUp = false;
-volatile bool isDown = false;
-volatile bool isLeft = false;
-volatile bool isRight = false;
-volatile unsigned long lastInterruptTime[4] = {0};
 
 void IRAM_ATTR upISR()
 {
@@ -68,8 +61,14 @@ void setup() {
   attachInterrupt(DOWN, downISR, FALLING);
   attachInterrupt(LEFT, leftISR, FALLING);
   attachInterrupt(RIGHT, rightISR, FALLING);
+
+  spawnPiece();
 }
 
 void loop() {
-
+  drawPiece(currPiece);
+  display.display();
+  display.clearDisplay();
+  rotatePiece();
+  delay(1000);
 }
