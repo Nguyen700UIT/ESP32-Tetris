@@ -7,7 +7,8 @@ uint8_t tetrisBoard[BOARD_NUM_ROW][BOARD_NUM_COL];
 Piece currPiece;
 u_int8_t nextPieceShape[4][4];
 unsigned long lastDelayedFall = 0;
-
+unsigned long lastGameOverTime = 0;
+int score = 0;
 
 inline u_int8_t pixelCordToCellCord(int cord)
 {
@@ -41,7 +42,10 @@ void drawBoard()
 void gameOver()
 {
   if(checkCollision(currPiece.shape, currPiece.x, currPiece.y))
+  {
     gameOverFlag = true;
+    lastGameOverTime = millis();
+  }
 }
 
 void spawnPiece()
@@ -211,12 +215,34 @@ void rotatePiece()
 void delayedFall()
 {
   unsigned long now = millis();
-  if(now - lastDelayedFall > 5000)
+  if(now - lastDelayedFall > 500)
   {
-    currPiece.y += GRAVITY;
+    if (!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
+      currPiece.y += GRAVITY;
+    else
+    {
+      lockPiece();
+      int temp = clearLine();
+      switch(temp)
+      {
+        case 1: 
+          score += 100;
+          break;
+        case 2: 
+          score += 300;
+          break;
+        case 3: 
+          score += 500;
+          break;
+        case 4:
+          score += 800;
+          break;
+      }
+      spawnPiece();
+      gameOver();
+    }
     lastDelayedFall = now;
   }
-
 }
 
 void drawPiece() //X, Y = Tetris board coordinates (0 <= X <= 64) & (0 <= Y <= 64)
@@ -242,9 +268,25 @@ void drawNextPiece()
     {
       if (nextPieceShape[tempY][tempX])
       {
-        display.fillRect(96 + tempX*BLOCK_SIZE, 32 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
-        display.drawRect(96 + tempX*BLOCK_SIZE, 32 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);
+        display.fillRect(80 + tempX*BLOCK_SIZE, 22 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
+        display.drawRect(80 + tempX*BLOCK_SIZE, 22 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);
       }
     }
   }
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(80, 4);
+  display.println("Next");
+  display.setCursor(80, 12);
+  display.println("piece: ");
+}
+
+void drawScore()
+{
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(80, 42);
+  display.println("Score: ");
+  display.setCursor(80, 52);
+  display.println(score);
 }

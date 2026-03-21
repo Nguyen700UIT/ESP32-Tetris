@@ -80,36 +80,35 @@ void setup() {
 void loop() {
   if (!gameOverFlag)
   {
-  //Logic
-  if(!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
-  {
+    //Logic
     movePiece();
     delayedFall();
-  }
-  else
-  {
-    lockPiece();
-    clearLine();
-    spawnPiece();
-    gameOver();
-  }
-  //Drawing
-  drawPiece();
-  drawBoard();
-  drawNextPiece();
-  display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
-  }
-  else
-  {
+    //Drawing
+    drawPiece();
+    drawBoard();
+    drawNextPiece();
+    drawScore();
+    display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
+    display.display();
     display.clearDisplay();
-    display.setTextSize(2);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(15, 20);
-    display.println("GAME OVER");
+  }
+  else
+  {
+    unsigned currGameOverTime = millis();
+    if (currGameOverTime - lastGameOverTime > 1000)
+    {
+      display.clearDisplay();
+      display.setTextSize(2);
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(15, 20);
+      display.println("GAME OVER");
+      display.display();
+    }
+    
   }
   
 
-  display.display();
-  display.clearDisplay();
+
+
   
 }

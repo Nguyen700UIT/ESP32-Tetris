@@ -19,10 +19,11 @@ struct Piece
     uint8_t shape[4][4];
 };
 
-
+extern int score;
 extern Piece currPiece;
 extern u_int8_t nextPieceShape[4][4];
 extern unsigned long lastDelayedFall;
+extern unsigned long lastGameOverTime;
 
 
 
@@ -40,3 +41,4 @@ void rotatePiece();
 void lockPiece();
 void drawNextPiece();
 void drawPiece();
+void drawScore();
