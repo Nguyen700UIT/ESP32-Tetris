@@ -12,6 +12,7 @@ void drawPiece(int currPiece, int X, int Y) //X, Y = Tetris board coordinates (0
       if (pieces[currPiece][tempY][tempX])
       {
         display.fillRect(X + tempX*BLOCK_SIZE, Y + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
+        display.drawRect(X + tempX*BLOCK_SIZE, Y + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);
       }
     }
   }

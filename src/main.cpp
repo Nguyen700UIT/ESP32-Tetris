@@ -1,33 +1,18 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
-
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-
-//Game definitions
-#define UP 4    
-#define DOWN 5  
-#define LEFT 16
-#define RIGHT 17
-#define RESET 13
-#define BLOCK_SIZE 4
-#define TETRIS_BOARD_WIDTH 40
-#define TETRIS_BOARD_HEIGHT 64
-#define UI_BOARD_WIDTH 88
-#define UI_BOARD_HEIGHT 64
-
-
-
-
+#include <display.h>
+#include <config.h>
+#include <tetris.h>
 
 void setup() {
-  Serial.begin(9600);
-
-
+  pinMode(UP, INPUT_PULLUP);
+  pinMode(DOWN, INPUT_PULLUP);
+  pinMode(LEFT, INPUT_PULLUP);
+  pinMode(RIGHT, INPUT_PULLUP);
+  pinMode(RESET, INPUT_PULLUP);
   
-
+  Serial.begin(9600);
+  initDisplay();
 }
 
 void loop() {
