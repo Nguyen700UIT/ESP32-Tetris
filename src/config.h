@@ -10,10 +10,23 @@
 #define LEFT 16
 #define RIGHT 17
 #define RESET 13
-
+#define BUTTON_DEBOUNCE 100
 //Game definitions
-#define BLOCK_SIZE 4
-#define TETRIS_BOARD_WIDTH 40
+#define BLOCK_SIZE 6
+#define GRAVITY BLOCK_SIZE
+#define TETRIS_BOARD_WIDTH 64
 #define TETRIS_BOARD_HEIGHT 64
-#define UI_BOARD_WIDTH 88
+#define UI_BOARD_WIDTH 64
 #define UI_BOARD_HEIGHT 64
+
+
+
+//Handling buttons
+extern volatile bool isUp; 
+extern volatile bool isDown;
+extern volatile bool isLeft;
+extern volatile bool isRight;
+extern volatile unsigned long lastInterruptTime[4];
+extern volatile unsigned long lastResetInterruptTime;
+//Stop ISR flag
+extern volatile bool gameOverFlag;

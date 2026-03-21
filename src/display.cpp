@@ -19,7 +19,3 @@ void initDisplay()
     display.display();
 }
 
-void drawBlock(int x, int y)
-{
-    display.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
-}

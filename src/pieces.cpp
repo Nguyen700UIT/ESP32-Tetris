@@ -1,7 +1,7 @@
 #include <pieces.h>
 
 //Pieces
-const uint8_t pieces[7][4][4] = 
+const uint8_t piecesShape[7][4][4] = 
 {
   //I piece
   {
