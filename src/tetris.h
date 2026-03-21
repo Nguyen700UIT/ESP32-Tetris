@@ -19,6 +19,7 @@ struct Piece
     uint8_t shape[4][4];
 };
 
+
 extern Piece currPiece;
 extern u_int8_t nextPieceShape[4][4];
 extern unsigned long lastDelayedFall;
@@ -28,12 +29,14 @@ extern unsigned long lastDelayedFall;
 inline u_int8_t pixelCordToCellCord(int cord); //Can be x or y
 bool checkCollision(u_int8_t shape[4][4], int x, int y);
 void initBoard();
+void gameOver();
 void drawBoard();
 void spawnPiece();
 void initPiece();
-void clearLine();
+int clearLine();
 void movePiece();
 void delayedFall();
 void rotatePiece();
 void lockPiece();
-void drawPiece(const Piece& currPiece);
+void drawNextPiece();
+void drawPiece();

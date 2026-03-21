@@ -16,7 +16,7 @@
 #define GRAVITY BLOCK_SIZE
 #define TETRIS_BOARD_WIDTH 64
 #define TETRIS_BOARD_HEIGHT 64
-#define UI_BOARD_WIDTH 88
+#define UI_BOARD_WIDTH 64
 #define UI_BOARD_HEIGHT 64
 
 
@@ -27,5 +27,6 @@ extern volatile bool isDown;
 extern volatile bool isLeft;
 extern volatile bool isRight;
 extern volatile unsigned long lastInterruptTime[4];
+extern volatile unsigned long lastResetInterruptTime;
 //Stop ISR flag
 extern volatile bool gameOverFlag;

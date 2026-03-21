@@ -6,3 +6,4 @@ volatile bool isDown = false;
 volatile bool isLeft = false;
 volatile bool isRight = false;
 volatile unsigned long lastInterruptTime[4] = {0};
+volatile unsigned long lastResetInterruptTime = 0;

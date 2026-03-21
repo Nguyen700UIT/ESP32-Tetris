@@ -49,11 +49,22 @@ void IRAM_ATTR rightISR()
   }
 }
 
+void IRAM_ATTR resetISR()
+{
+  unsigned long currInterruptTime = millis();
+  if(currInterruptTime - lastResetInterruptTime > 100)
+  {
+    gameOverFlag = false;
+    lastResetInterruptTime = currInterruptTime;
+  }
+}
+
 void setup() {
   pinMode(UP, INPUT_PULLUP);
   pinMode(DOWN, INPUT_PULLUP);
   pinMode(LEFT, INPUT_PULLUP);
   pinMode(RIGHT, INPUT_PULLUP);
+  pinMode(RESET, INPUT_PULLUP);
   Serial.begin(9600);
   initDisplay();
 
@@ -67,6 +78,9 @@ void setup() {
 }
 
 void loop() {
+  if (!gameOverFlag)
+  {
+  //Logic
   if(!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
   {
     movePiece();
@@ -75,13 +89,26 @@ void loop() {
   else
   {
     lockPiece();
+    clearLine();
     spawnPiece();
+    gameOver();
   }
-
-  drawPiece(currPiece);
+  //Drawing
+  drawPiece();
   drawBoard();
-  
+  drawNextPiece();
   display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
+  }
+  else
+  {
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(15, 20);
+    display.println("GAME OVER");
+  }
+  
+
   display.display();
   display.clearDisplay();
   

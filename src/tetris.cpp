@@ -38,6 +38,12 @@ void drawBoard()
   }
 }
 
+void gameOver()
+{
+  if(checkCollision(currPiece.shape, currPiece.x, currPiece.y))
+    gameOverFlag = true;
+}
+
 void spawnPiece()
 {
   currPiece.x = BOARD_OFFSET + (BOARD_PIXEL_WIDTH/2) - (BLOCK_SIZE*2); //Spawn tại tâm của piece
@@ -141,9 +147,39 @@ void lockPiece() //Lock piece and add piece to board array
   }
 }
 
-void clearLine()
+void removeLine(int y)
 {
+  
+}
 
+int clearLine()
+{
+  int cleared = 0;
+  for (int y = BOARD_NUM_ROW - 1; y > 0; --y)
+  {
+    bool full = true;
+    for (int x = 0; x < BOARD_NUM_COL; ++x)
+    {
+      if(!tetrisBoard[y][x])
+      {
+        full = false;
+        break;
+      }
+    }
+    if (full)
+    {
+      for (int i = y; i > 0; --i) // Shift xuống
+      {
+      memcpy(tetrisBoard[i], tetrisBoard[i-1], sizeof(tetrisBoard[i]));
+      }
+      //Sau khi shift thì hàng trên cùng sẽ trống
+      memset(tetrisBoard[0], 0, sizeof(tetrisBoard[0]));
+      //Kiểm tra sau khi shift hàng mới có full không
+      y++;
+      cleared++;
+    }
+  }
+  return cleared;
 }
 
 void rotatePiece()
@@ -183,7 +219,7 @@ void delayedFall()
 
 }
 
-void drawPiece(const Piece& currPiece) //X, Y = Tetris board coordinates (0 <= X <= 64) & (0 <= Y <= 64)
+void drawPiece() //X, Y = Tetris board coordinates (0 <= X <= 64) & (0 <= Y <= 64)
 {
   for (int tempY = 0; tempY < 4; tempY++)
   {
@@ -193,6 +229,21 @@ void drawPiece(const Piece& currPiece) //X, Y = Tetris board coordinates (0 <= X
       {
         display.fillRect(currPiece.x + tempX*BLOCK_SIZE, currPiece.y + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
         display.drawRect(currPiece.x + tempX*BLOCK_SIZE, currPiece.y + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);
+      }
+    }
+  }
+}
+
+void drawNextPiece()
+{
+  for (int tempY = 0; tempY < 4; tempY++)
+  {
+    for (int tempX = 0; tempX < 4; tempX++)
+    {
+      if (nextPieceShape[tempY][tempX])
+      {
+        display.fillRect(96 + tempX*BLOCK_SIZE, 32 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
+        display.drawRect(96 + tempX*BLOCK_SIZE, 32 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);
       }
     }
   }
