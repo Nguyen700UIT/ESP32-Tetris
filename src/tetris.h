@@ -14,15 +14,13 @@ extern uint8_t tetrisBoard[BOARD_NUM_ROW][BOARD_NUM_COL];
 
 struct Piece
 {
-    int type;
     int x;
     int y;
-    int rotation;
     uint8_t shape[4][4];
 };
 
 extern Piece currPiece;
-
+extern u_int8_t nextPieceShape[4][4];
 extern unsigned long lastDelayedFall;
 
 
@@ -30,7 +28,9 @@ extern unsigned long lastDelayedFall;
 inline u_int8_t pixelCordToCellCord(int cord); //Can be x or y
 bool checkCollision(u_int8_t shape[4][4], int x, int y);
 void initBoard();
+void drawBoard();
 void spawnPiece();
+void initPiece();
 void clearLine();
 void movePiece();
 void delayedFall();

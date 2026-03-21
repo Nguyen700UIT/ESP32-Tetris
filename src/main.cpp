@@ -62,14 +62,25 @@ void setup() {
   attachInterrupt(LEFT, leftISR, FALLING);
   attachInterrupt(RIGHT, rightISR, FALLING);
 
-  spawnPiece();
+  initPiece();
   
 }
 
 void loop() {
-  movePiece();
-  delayedFall();
+  if(!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
+  {
+    movePiece();
+    delayedFall();
+  }
+  else
+  {
+    lockPiece();
+    spawnPiece();
+  }
+
   drawPiece(currPiece);
+  drawBoard();
+  
   display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
   display.display();
   display.clearDisplay();

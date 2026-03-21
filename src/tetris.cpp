@@ -5,6 +5,7 @@
 
 uint8_t tetrisBoard[BOARD_NUM_ROW][BOARD_NUM_COL];
 Piece currPiece;
+u_int8_t nextPieceShape[4][4];
 unsigned long lastDelayedFall = 0;
 
 
@@ -23,14 +24,42 @@ void initBoard()
   }
 }
 
+void drawBoard()
+{
+  for (int y = 0; y < BOARD_NUM_ROW; y++)
+  {
+    for (int x = 0; x < BOARD_NUM_COL; x++)
+    {
+      if (tetrisBoard[y][x])
+      {
+        display.fillRect(BOARD_OFFSET + x*BLOCK_SIZE, BOARD_OFFSET + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
+        display.drawRect(BOARD_OFFSET + x*BLOCK_SIZE, BOARD_OFFSET + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);      }
+    }
+  }
+}
+
 void spawnPiece()
 {
-  currPiece.type = random(0, 7);
   currPiece.x = BOARD_OFFSET + (BOARD_PIXEL_WIDTH/2) - (BLOCK_SIZE*2); //Spawn tại tâm của piece
   currPiece.y = BOARD_OFFSET;
-  memcpy(currPiece.shape, piecesShape[currPiece.type], sizeof(currPiece.shape));
-  currPiece.rotation = 0;
-  lastDelayedFall = millis();
+  memcpy(currPiece.shape, nextPieceShape, sizeof(currPiece.shape));
+
+  //Next piece
+  int nextType = random(0, 7);
+  memcpy(nextPieceShape, piecesShape[nextType], sizeof(nextPieceShape));
+}
+
+void initPiece()
+{
+  //Current piece
+  int type = random(0, 7);
+  currPiece.x = BOARD_OFFSET + (BOARD_PIXEL_WIDTH/2) - (BLOCK_SIZE*2); //Spawn tại tâm của piece
+  currPiece.y = BOARD_OFFSET;
+  memcpy(currPiece.shape, piecesShape[type], sizeof(currPiece.shape));
+
+  //Next piece
+  int nextType = random(0, 7);
+  memcpy(nextPieceShape, piecesShape[nextType], sizeof(nextPieceShape));
 }
 
 bool checkCollision(u_int8_t shape[4][4], int x, int y)
@@ -64,8 +93,6 @@ bool checkCollision(u_int8_t shape[4][4], int x, int y)
 
 void movePiece()
 {
-  if(!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
-  {
     if (isUp)
     {
       rotatePiece();
@@ -73,21 +100,50 @@ void movePiece()
     }
     else if (isLeft)
     {
-      currPiece.x -= BLOCK_SIZE;
+      if (!checkCollision(currPiece.shape, currPiece.x - BLOCK_SIZE, currPiece.y))
+        currPiece.x -= BLOCK_SIZE;
       isLeft = false;
     }
     else if (isRight)
     {
-      currPiece.x += BLOCK_SIZE;
+      if (!checkCollision(currPiece.shape, currPiece.x + BLOCK_SIZE, currPiece.y))
+        currPiece.x += BLOCK_SIZE;
       isRight = false;
     }
     else if (isDown)
     {
-      currPiece.y += BLOCK_SIZE;
+      if (!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
+        currPiece.y += BLOCK_SIZE;
       isDown = false; 
     }
+}
+
+void lockPiece() //Lock piece and add piece to board array
+{
+  for (int tempY = 0; tempY < 4; ++tempY)
+  {
+    for (int tempX = 0; tempX < 4; ++tempX)
+    {
+      if (!currPiece.shape[tempY][tempX]) continue;
+
+
+      int px = currPiece.x + tempX*BLOCK_SIZE; //Pixel cord;
+      int py = currPiece.y + tempY*BLOCK_SIZE; //Pixel cord;
+      
+      int boardX = pixelCordToCellCord(px);
+      int boardY = pixelCordToCellCord(py);
+      
+      if (boardY >= 0)
+      {
+        tetrisBoard[boardY][boardX] = 1;
+      }
+    }
   }
-  
+}
+
+void clearLine()
+{
+
 }
 
 void rotatePiece()
@@ -121,10 +177,8 @@ void delayedFall()
   unsigned long now = millis();
   if(now - lastDelayedFall > 5000)
   {
-    if(!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
-      currPiece.y += GRAVITY;
+    currPiece.y += GRAVITY;
     lastDelayedFall = now;
-    Serial.println(now - lastDelayedFall);
   }
 
 }
