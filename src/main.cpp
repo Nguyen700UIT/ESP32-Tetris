@@ -67,11 +67,11 @@ void setup() {
 }
 
 void loop() {
+  movePiece();
+  delayedFall();
   drawPiece(currPiece);
   display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
   display.display();
-  
   display.clearDisplay();
-  rotatePiece();
-  delay(1000);
+  
 }

@@ -2,9 +2,13 @@
 #include <Arduino.h>
 #include <pieces.h>
 
-//Tetris board matrix
-#define BOARD_NUM_ROW 16 
+//Tetris board matrix 60x60 pixel
+#define BOARD_NUM_ROW 10 
 #define BOARD_NUM_COL 10
+#define BOARD_PIXEL_WIDTH 60
+#define BOARD_PIXEL_HEIGHT 60
+#define BOARD_OFFSET 2 // Bỏ 2 pixel đầu và 2 pixel cuối với mỗi trục X và Y
+
 
 extern uint8_t tetrisBoard[BOARD_NUM_ROW][BOARD_NUM_COL];
 
@@ -18,14 +22,18 @@ struct Piece
 };
 
 extern Piece currPiece;
-extern const int gravity;
+
+extern unsigned long lastDelayedFall;
 
 
+
+inline u_int8_t pixelCordToCellCord(int cord); //Can be x or y
 bool checkCollision(u_int8_t shape[4][4], int x, int y);
 void initBoard();
 void spawnPiece();
 void clearLine();
 void movePiece();
+void delayedFall();
 void rotatePiece();
 void lockPiece();
 void drawPiece(const Piece& currPiece);
