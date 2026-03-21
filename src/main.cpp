@@ -1,33 +1,73 @@
 #include <Arduino.h>
-#include <Wire.h>
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
+#include <display.h>
+#include <tetris.h>
+#include <config.h>
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
+volatile bool gameOverFlag = false;
 
-//Game definitions
-#define UP 4    
-#define DOWN 5  
-#define LEFT 16
-#define RIGHT 17
-#define RESET 13
-#define BLOCK_SIZE 4
-#define TETRIS_BOARD_WIDTH 40
-#define TETRIS_BOARD_HEIGHT 64
-#define UI_BOARD_WIDTH 88
-#define UI_BOARD_HEIGHT 64
+//Handling buttons
+volatile bool isUp = false;
+volatile bool isDown = false;
+volatile bool isLeft = false;
+volatile bool isRight = false;
+volatile unsigned long lastInterruptTime[4] = {0};
 
+void IRAM_ATTR upISR()
+{
+  if(gameOverFlag) return;
+  unsigned long currInterrruptTime = millis();
+  if (currInterrruptTime - lastInterruptTime[0] > 100)
+  {
+    isUp = true;
+    lastInterruptTime[0] = currInterrruptTime;
+  }
+}
 
+void IRAM_ATTR downISR()
+{
+  if(gameOverFlag) return;
+  unsigned long currInterrruptTime = millis();
+  if (currInterrruptTime - lastInterruptTime[1] > 100)
+  {
+    isDown = true;
+    lastInterruptTime[1] = currInterrruptTime;
+  }
+}
 
+void IRAM_ATTR leftISR()
+{
+  if(gameOverFlag) return;
+  unsigned long currInterrruptTime = millis();
+  if (currInterrruptTime - lastInterruptTime[2] > 100)
+  {
+    isLeft = true;
+    lastInterruptTime[2] = currInterrruptTime;
+  }
+}
 
+void IRAM_ATTR rightISR()
+{
+  if(gameOverFlag) return;
+  unsigned long currInterrruptTime = millis();
+  if (currInterrruptTime - lastInterruptTime[3] > 100)
+  {
+    isRight = true;
+    lastInterruptTime[3] = currInterrruptTime;
+  }
+}
 
 void setup() {
+  pinMode(UP, INPUT_PULLUP);
+  pinMode(DOWN, INPUT_PULLUP);
+  pinMode(LEFT, INPUT_PULLUP);
+  pinMode(RIGHT, INPUT_PULLUP);
   Serial.begin(9600);
+  initDisplay();
 
-
-  
-
+  attachInterrupt(UP, upISR, FALLING);
+  attachInterrupt(DOWN, downISR, FALLING);
+  attachInterrupt(LEFT, leftISR, FALLING);
+  attachInterrupt(RIGHT, rightISR, FALLING);
 }
 
 void loop() {
