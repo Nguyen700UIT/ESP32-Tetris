@@ -7,6 +7,12 @@ uint8_t tetrisBoard[BOARD_NUM_ROW][BOARD_NUM_COL];
 Piece currPiece;
 const int gravity = 3;
 
+inline u_int8_t pixelCordToCellCord(int cord)
+{
+    return (cord - BOARD_OFFSET) / BLOCK_SIZE;
+}
+
+
 void initBoard()
 {
   for (int y = 0; y < BOARD_NUM_ROW; y++)
@@ -25,11 +31,41 @@ void spawnPiece()
   currPiece.rotation = 0;
 }
 
+bool checkCollision(u_int8_t shape[4][4], int x, int y)
+{
+  for (int tempY = 0; tempY < 4; ++tempY)
+  {
+    for (int tempX = 0; tempX < 4; ++tempX)
+    {
+      if (!shape[tempY][tempX]) continue;
+
+
+      int px = x + tempX*BLOCK_SIZE; //Pixel cord;
+      int py = y + tempY*BLOCK_SIZE; //Pixel cord;
+      //Wall collision x cords
+      if (px < BOARD_OFFSET || px + BLOCK_SIZE > BOARD_OFFSET + BOARD_PIXEL_WIDTH)
+        return true;
+      
+      //Wall collision y cords
+      if(py < BOARD_OFFSET || py + BLOCK_SIZE > BOARD_OFFSET + BOARD_PIXEL_HEIGHT)
+        return true;
+      
+      int boardX = pixelCordToCellCord(px);
+      int boardY = pixelCordToCellCord(py);
+      
+      if (boardY >= 0 && tetrisBoard[boardY][boardX])
+        return true;      
+    }
+  }
+  return false;
+}
+
 void movePiece()
 {
 }
 
 void rotatePiece()
+
 {
   //Tranpose matrix
   u_int8_t temp[4][4];
@@ -50,7 +86,17 @@ void rotatePiece()
       temp[3-j][i] = swap;
     }
   }
+
   memcpy(currPiece.shape, temp, sizeof(currPiece.shape));
+}
+
+void delayedFall()
+{
+  if(currDelayedFall = lastDelayedFall > 500)
+  {
+    currPiece.y += GRAVITY;
+    lastDelayedFall = currDelayedFall;
+  }
 }
 
 void drawPiece(const Piece& currPiece) //X, Y = Tetris board coordinates (0 <= X <= 64) & (0 <= Y <= 64)

@@ -21,6 +21,7 @@ extern Piece currPiece;
 extern const int gravity;
 
 
+bool checkCollision(u_int8_t shape[4][4], int x, int y);
 void initBoard();
 void spawnPiece();
 void clearLine();

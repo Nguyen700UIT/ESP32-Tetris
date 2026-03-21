@@ -63,11 +63,14 @@ void setup() {
   attachInterrupt(RIGHT, rightISR, FALLING);
 
   spawnPiece();
+  
 }
 
 void loop() {
   drawPiece(currPiece);
+  display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
   display.display();
+  
   display.clearDisplay();
   rotatePiece();
   delay(1000);

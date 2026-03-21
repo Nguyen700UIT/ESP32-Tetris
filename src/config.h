@@ -12,7 +12,7 @@
 #define RESET 13
 #define BUTTON_DEBOUNCE 100
 //Game definitions
-#define BLOCK_SIZE 4
+#define BLOCK_SIZE 6
 #define TETRIS_BOARD_WIDTH 64
 #define TETRIS_BOARD_HEIGHT 64
 #define UI_BOARD_WIDTH 88
