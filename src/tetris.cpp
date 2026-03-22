@@ -151,10 +151,7 @@ void lockPiece() //Lock piece and add piece to board array
   }
 }
 
-void removeLine(int y)
-{
-  
-}
+
 
 int clearLine()
 {
@@ -281,6 +278,16 @@ void drawNextPiece()
   display.println("piece: ");
 }
 
+void drawFailed()
+{
+   display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(70, 10);
+  display.println("YOU");
+  display.setCursor(70, 30);
+  display.println("LOST");
+}
+
 void drawScore()
 {
   display.setTextSize(1);
@@ -289,4 +296,12 @@ void drawScore()
   display.println("Score: ");
   display.setCursor(80, 52);
   display.println(score);
+}
+
+void gameReset()
+{
+  score = 0;
+  initBoard();
+  initPiece();
+  gameOverFlag = false;
 }

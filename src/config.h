@@ -30,4 +30,4 @@ extern volatile bool reseted;
 extern volatile unsigned long lastInterruptTime[4];
 extern volatile unsigned long lastResetInterruptTime;
 //Stop ISR flag
-extern volatile bool gameOverFlag;
+extern bool gameOverFlag;

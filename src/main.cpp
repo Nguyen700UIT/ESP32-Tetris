@@ -55,7 +55,6 @@ void IRAM_ATTR resetISR()
   if(currInterruptTime - lastResetInterruptTime > 100)
   {
     reseted = true;
-    gameOverFlag = false;
     lastResetInterruptTime = currInterruptTime;
   }
 }
@@ -79,7 +78,6 @@ void setup() {
 }
 
 void loop() {
-  
   if (!gameOverFlag)
   {
     //Logic
@@ -97,27 +95,25 @@ void loop() {
   else
   {
     unsigned currGameOverTime = millis();
-    if (currGameOverTime - lastGameOverTime > 1000)
+    if (currGameOverTime - lastGameOverTime > 1500)
     {
-      display.clearDisplay();
       display.setTextSize(2);
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(15, 20);
       display.println("GAME OVER");
-      display.display();
+      if (reseted)
+      {  
+        gameReset();
+        reseted = false;
+      }
     }
-    if (reseted)
-   {
-      score = 0;
-      initBoard();
-      display.clearDisplay();
-      reseted = false;
+    else
+    {
+      drawPiece();
+      display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
+      drawFailed();
     }
-    
+    display.display();
+    display.clearDisplay();
   }
-  
-
-
-
-  
 }

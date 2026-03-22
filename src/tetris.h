@@ -29,6 +29,7 @@ extern unsigned long lastGameOverTime;
 
 inline u_int8_t pixelCordToCellCord(int cord); //Can be x or y
 bool checkCollision(u_int8_t shape[4][4], int x, int y);
+void gameReset();
 void initBoard();
 void gameOver();
 void drawBoard();
@@ -41,4 +42,5 @@ void rotatePiece();
 void lockPiece();
 void drawNextPiece();
 void drawPiece();
+void drawFailed();
 void drawScore();
