@@ -80,6 +80,9 @@ void setup() {
 void loop() {
   if (!gameOverFlag)
   {
+    //Prevent future reset
+    if (reseted)
+      reseted = false;
     //Logic
     movePiece();
     delayedFall();
@@ -107,7 +110,7 @@ void loop() {
         reseted = false;
       }
     }
-    else
+    else //Lost screen
     {
       drawPiece();
       display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
