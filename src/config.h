@@ -26,6 +26,7 @@ extern volatile bool isUp;
 extern volatile bool isDown;
 extern volatile bool isLeft;
 extern volatile bool isRight;
+extern volatile bool reseted;
 extern volatile unsigned long lastInterruptTime[4];
 extern volatile unsigned long lastResetInterruptTime;
 //Stop ISR flag

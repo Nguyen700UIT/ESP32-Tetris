@@ -54,6 +54,7 @@ void IRAM_ATTR resetISR()
   unsigned long currInterruptTime = millis();
   if(currInterruptTime - lastResetInterruptTime > 100)
   {
+    reseted = true;
     gameOverFlag = false;
     lastResetInterruptTime = currInterruptTime;
   }
@@ -72,12 +73,13 @@ void setup() {
   attachInterrupt(DOWN, downISR, FALLING);
   attachInterrupt(LEFT, leftISR, FALLING);
   attachInterrupt(RIGHT, rightISR, FALLING);
-
+  attachInterrupt(RESET, resetISR, FALLING);
   initPiece();
   
 }
 
 void loop() {
+  
   if (!gameOverFlag)
   {
     //Logic
@@ -103,6 +105,13 @@ void loop() {
       display.setCursor(15, 20);
       display.println("GAME OVER");
       display.display();
+    }
+    if (reseted)
+   {
+      score = 0;
+      initBoard();
+      display.clearDisplay();
+      reseted = false;
     }
     
   }
