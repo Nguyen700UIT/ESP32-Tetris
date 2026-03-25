@@ -1,18 +1,18 @@
 #pragma once
 
 //Screen definitions
-#define SCREEN_WIDTH tft.width();
-#define SCREEN_HEIGHT tft.height();
+#define SCREEN_WIDTH tft.width()
+#define SCREEN_HEIGHT tft.height()
 
 //Buttons
-#define UP 4    
-#define DOWN 5  
-#define LEFT 16
-#define RIGHT 17
+#define UP 25
+#define DOWN 26  
+#define LEFT 27
+#define RIGHT 33
 #define RESET 13
 #define BUTTON_DEBOUNCE 100
 //Game definitions
-#define BLOCK_SIZE 6
+#define BLOCK_SIZE 20
 #define GRAVITY BLOCK_SIZE
 #define TETRIS_BOARD_WIDTH 64
 #define TETRIS_BOARD_HEIGHT 64

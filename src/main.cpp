@@ -87,36 +87,24 @@ void loop() {
     movePiece();
     delayedFall();
     //Drawing
+    erasePrevPiece();
     drawPiece();
-    drawBoard();
     drawNextPiece();
     drawScore();
-    display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
-    display.display();
-    display.clearDisplay();
+    prevPiece = currPiece;
   }
   else
   {
     unsigned currGameOverTime = millis();
     if (currGameOverTime - lastGameOverTime > 1500)
     {
-      display.setTextSize(2);
-      display.setTextColor(SSD1306_WHITE);
-      display.setCursor(15, 20);
-      display.println("GAME OVER");
-      if (reseted)
-      {  
-        gameReset();
-        reseted = false;
-      }
+      drawGameOver();
     }
     else //Lost screen
     {
       drawPiece();
-      display.drawFastVLine(64, 0, 64, SSD1306_WHITE);
-      drawFailed();
+
+
     }
-    display.display();
-    display.clearDisplay();
   }
 }

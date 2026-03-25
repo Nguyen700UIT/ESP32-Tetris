@@ -2,13 +2,16 @@
 #include <pieces.h>
 #include <display.h>
 #include <config.h>
-
-uint8_t tetrisBoard[BOARD_NUM_ROW][BOARD_NUM_COL];
-Piece currPiece;
-u_int8_t nextPieceShape[4][4];
-unsigned long lastDelayedFall = 0;
-unsigned long lastGameOverTime = 0;
+//Variables
+uint16_t tetrisBoard[BOARD_NUM_ROW][BOARD_NUM_COL];
 int score = 0;
+Piece prevPiece;
+Piece currPiece;
+uint8_t nextPieceShape[4][4];
+uint16_t nextPieceColor;
+unsigned long lastDelayedFall = 0;
+unsigned long lastGameOverTime= 0 ;
+
 
 inline u_int8_t pixelCordToCellCord(int cord)
 {
@@ -33,8 +36,23 @@ void drawBoard()
     {
       if (tetrisBoard[y][x])
       {
-        display.fillRect(BOARD_OFFSET + x*BLOCK_SIZE, BOARD_OFFSET + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
-        display.drawRect(BOARD_OFFSET + x*BLOCK_SIZE, BOARD_OFFSET + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);      }
+        tft.fillRect(BOARD_OFFSET + x*BLOCK_SIZE, BOARD_OFFSET + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, tetrisBoard[y][x]);
+        tft.drawRect(BOARD_OFFSET + x*BLOCK_SIZE, BOARD_OFFSET + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, TFT_WHITE);      
+      }
+    }
+  }
+}
+
+void eraseBoard()
+{
+  for (int y = 0; y < BOARD_NUM_ROW; y++)
+  {
+    for (int x = 0; x < BOARD_NUM_COL; x++)
+    {
+      if (tetrisBoard[y][x])
+      {
+        tft.fillRect(BOARD_OFFSET + x*BLOCK_SIZE, BOARD_OFFSET + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, TFT_BLACK);      
+      }
     }
   }
 }
@@ -53,16 +71,24 @@ void spawnPiece()
   currPiece.x = BOARD_OFFSET + (BOARD_PIXEL_WIDTH/2) - (BLOCK_SIZE*2); //Spawn tại tâm của piece
   currPiece.y = BOARD_OFFSET;
   memcpy(currPiece.shape, nextPieceShape, sizeof(currPiece.shape));
-
+  currPiece.pieceColor = nextPieceColor;
   //Next piece
   int nextType = random(0, 7);
   memcpy(nextPieceShape, piecesShape[nextType], sizeof(nextPieceShape));
+  nextPieceColor = pieceColor[nextType];
 }
 
 void initPiece()
 {
+  //Prev piece
+  prevPiece.pieceColor = 0;
+  prevPiece.x = -1000;
+  prevPiece.y = -1000;
+  memcpy(prevPiece.shape, piecesShape[0], sizeof(prevPiece.shape));
+
   //Current piece
   int type = random(0, 7);
+  currPiece.pieceColor = pieceColor[type];
   currPiece.x = BOARD_OFFSET + (BOARD_PIXEL_WIDTH/2) - (BLOCK_SIZE*2); //Spawn tại tâm của piece
   currPiece.y = BOARD_OFFSET;
   memcpy(currPiece.shape, piecesShape[type], sizeof(currPiece.shape));
@@ -70,6 +96,7 @@ void initPiece()
   //Next piece
   int nextType = random(0, 7);
   memcpy(nextPieceShape, piecesShape[nextType], sizeof(nextPieceShape));
+  
 }
 
 bool checkCollision(u_int8_t shape[4][4], int x, int y)
@@ -145,7 +172,7 @@ void lockPiece() //Lock piece and add piece to board array
       
       if (boardY >= 0)
       {
-        tetrisBoard[boardY][boardX] = 1;
+        tetrisBoard[boardY][boardX] = currPiece.pieceColor;
       }
     }
   }
@@ -161,7 +188,7 @@ int clearLine()
     bool full = true;
     for (int x = 0; x < BOARD_NUM_COL; ++x)
     {
-      if(!tetrisBoard[y][x])
+      if(tetrisBoard[y][x] == 0)
       {
         full = false;
         break;
@@ -218,6 +245,8 @@ void delayedFall()
       currPiece.y += GRAVITY;
     else
     {
+      eraseBoard();
+      drawBoard();
       lockPiece();
       int temp = clearLine();
       switch(temp)
@@ -242,6 +271,8 @@ void delayedFall()
   }
 }
 
+
+
 void drawPiece() //X, Y = Tetris board coordinates (0 <= X <= 64) & (0 <= Y <= 64)
 {
   for (int tempY = 0; tempY < 4; tempY++)
@@ -250,11 +281,58 @@ void drawPiece() //X, Y = Tetris board coordinates (0 <= X <= 64) & (0 <= Y <= 6
     {
       if (currPiece.shape[tempY][tempX])
       {
-        display.fillRect(currPiece.x + tempX*BLOCK_SIZE, currPiece.y + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
-        display.drawRect(currPiece.x + tempX*BLOCK_SIZE, currPiece.y + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);
+        tft.fillRect(currPiece.x + tempX*BLOCK_SIZE, currPiece.y + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, currPiece.pieceColor);
+        tft.drawRect(currPiece.x + tempX*BLOCK_SIZE, currPiece.y + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, TFT_BLACK);
       }
     }
   }
+}
+
+void erasePlayingUI()
+{
+  tft.drawFastVLine(BOARD_PIXEL_WIDTH + 4, 0, BOARD_PIXEL_HEIGHT, TFT_BLACK);
+
+  tft.setTextSize(1);
+  tft.setTextColor(TFT_BLACK);
+  tft.setCursor(BOARD_PIXEL_WIDTH + 10, BOARD_PIXEL_HEIGHT - (BOARD_PIXEL_HEIGHT/2));
+  tft.println("Score: ");
+  tft.setCursor(BOARD_PIXEL_WIDTH + 10, BOARD_PIXEL_HEIGHT - (BOARD_PIXEL_HEIGHT/2) + 20);
+  tft.println(score);
+
+  tft.setCursor(BOARD_PIXEL_WIDTH + 10 + 20, BOARD_PIXEL_HEIGHT - (BOARD_PIXEL_HEIGHT/2));
+  tft.println("Next piece: ");
+}
+
+void drawPlayingUI()
+{
+
+  tft.drawFastVLine(BOARD_PIXEL_WIDTH + 4, 0, BOARD_PIXEL_HEIGHT, TFT_WHITE);
+
+  tft.setTextSize(1);
+  tft.setTextColor(TFT_WHITE);
+  tft.setCursor(BOARD_PIXEL_WIDTH + 10, BOARD_PIXEL_HEIGHT - (BOARD_PIXEL_HEIGHT/2));
+  tft.println("Score: ");
+  tft.setCursor(BOARD_PIXEL_WIDTH + 10, BOARD_PIXEL_HEIGHT - (BOARD_PIXEL_HEIGHT/2) + 20);
+  tft.println(score);
+
+  tft.setCursor(BOARD_PIXEL_WIDTH + 10 + 20, BOARD_PIXEL_HEIGHT - (BOARD_PIXEL_HEIGHT/2));
+  tft.println("Next piece: ");
+}
+
+void eraseGameOverUI()
+{
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_BLACK);
+  tft.setCursor(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+  tft.println("GAME OVER");
+}
+
+void drawGameOverUI()
+{
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_WHITE);
+  tft.setCursor(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+  tft.println("GAME OVER");
 }
 
 void drawNextPiece()
@@ -265,38 +343,27 @@ void drawNextPiece()
     {
       if (nextPieceShape[tempY][tempX])
       {
-        display.fillRect(80 + tempX*BLOCK_SIZE, 22 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_WHITE);
-        display.drawRect(80 + tempX*BLOCK_SIZE, 22 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, SSD1306_BLACK);
+        tft.fillRect(280 + tempX*BLOCK_SIZE,100  + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, nextPieceColor);
+        tft.drawRect(280 + tempX*BLOCK_SIZE, 100 + tempY*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, TFT_WHITE);
       }
     }
   }
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(80, 4);
-  display.println("Next");
-  display.setCursor(80, 12);
-  display.println("piece: ");
 }
 
-void drawFailed()
+void drawGameOver()
 {
-   display.setTextSize(2);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(70, 10);
-  display.println("YOU");
-  display.setCursor(70, 30);
-  display.println("LOST");
+  tft.setTextSize(2);
+  tft.setTextColor(SSD1306_WHITE);
+  tft.setCursor(15, 20);
+  tft.println("GAME OVER");
+  if (reseted)
+  {  
+    gameReset();
+    reseted = false;
+  }
 }
 
-void drawScore()
-{
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(80, 42);
-  display.println("Score: ");
-  display.setCursor(80, 52);
-  display.println(score);
-}
+
 
 void gameReset()
 {
@@ -304,4 +371,9 @@ void gameReset()
   initBoard();
   initPiece();
   gameOverFlag = false;
+}
+
+void erasePrevPiece()
+{
+
 }
