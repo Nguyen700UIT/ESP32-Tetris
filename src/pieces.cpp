@@ -54,3 +54,6 @@ const uint8_t piecesShape[7][4][4] =
     {0, 0, 0, 0}
   }
 };
+
+//Pieces color
+const uint16_t pieceColor = {TFT_CYAN, TFT_PURPLE, TFT_YELLOW, TFT_GREEN, TFT_RED, TFT_BLUE, TFT_ORANGE};

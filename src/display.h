@@ -1,8 +1,7 @@
 #pragma once
 #include <Wire.h>
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
+#include <TFT_eSPI.h>
 
-extern Adafruit_SSD1306 display;
+extern TFT_eSPI tft;
 
 void initDisplay();

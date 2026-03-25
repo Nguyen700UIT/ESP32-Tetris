@@ -20,6 +20,7 @@ struct Piece
 };
 
 extern int score;
+extern Piece prevPiece;
 extern Piece currPiece;
 extern u_int8_t nextPieceShape[4][4];
 extern unsigned long lastDelayedFall;

@@ -1,8 +1,8 @@
 #pragma once
 
 //Screen definitions
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
+#define SCREEN_WIDTH tft.width();
+#define SCREEN_HEIGHT tft.height();
 
 //Buttons
 #define UP 4    
