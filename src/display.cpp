@@ -1,11 +1,14 @@
 #include <display.h>
 #include <config.h>
 
+TFT_eSPI tft;
+TFT_eSprite tetrisCanvas = TFT_eSprite(&tft);
 void initDisplay()
 {
     tft.init();
     tft.setRotation(1);
     tft.fillScreen(TFT_BLACK);
+    tetrisCanvas.createSprite(200, 240);
     
 }
 

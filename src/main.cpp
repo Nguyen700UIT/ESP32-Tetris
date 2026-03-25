@@ -67,6 +67,7 @@ void setup() {
   pinMode(RESET, INPUT_PULLUP);
   Serial.begin(9600);
   initDisplay();
+ 
 
   attachInterrupt(UP, upISR, FALLING);
   attachInterrupt(DOWN, downISR, FALLING);
@@ -74,37 +75,68 @@ void setup() {
   attachInterrupt(RIGHT, rightISR, FALLING);
   attachInterrupt(RESET, resetISR, FALLING);
   initPiece();
-  
+
+  drawPlayingUI();
+  drawNextPiece();
+  drawScore();
 }
 
 void loop() {
   if (!gameOverFlag)
   {
+    //Flag handling
+    erasedPlayingUI = false;
+    erasedDeathScreen = false;
     //Prevent future reset
     if (reseted)
       reseted = false;
     //Logic
     movePiece();
-    delayedFall();
+    calculateGhostPiece();
+    bool drawingNextPieceFlag = delayedFallAndLogic();
     //Drawing
-    erasePrevPiece();
-    drawPiece();
-    drawNextPiece();
-    drawScore();
-    prevPiece = currPiece;
+    renderBoard();
+    if(drawingNextPieceFlag)
+    {
+      eraseNextPiece();
+      drawNextPiece();  
+    }
+
+    if(prevScore != score)
+    {
+      drawScore();
+      prevScore = score;
+    }
   }
   else
   {
+    redrawUI = true;
     unsigned currGameOverTime = millis();
     if (currGameOverTime - lastGameOverTime > 1500)
     {
-      drawGameOver();
+      if(!erasedDeathScreen)
+      {
+        eraseScreen();
+        erasedDeathScreen = true;
+      }
+      drawGameOverUI();
+      if(erasedDeathScreen && reseted)
+      {
+        gameReset();
+        drawNextPiece();
+        drawScore();
+        drawPlayingUI();
+      }
+
     }
-    else //Lost screen
+    else //Death screen
     {
-      drawPiece();
-
-
+      if(!erasedPlayingUI)
+      {
+        eraseScreen();
+        erasedPlayingUI = true;
+      }
+      drawDeathUI();
     }
   }
 }
