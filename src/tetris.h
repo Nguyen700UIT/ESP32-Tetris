@@ -26,6 +26,8 @@ extern Piece currPiece;
 extern Piece ghostPiece;
 extern uint8_t nextPieceShape[4][4];
 extern uint16_t nextPieceColor;
+extern bool touchGround;
+extern unsigned long lastTouchTime;
 extern unsigned long lastDelayedFall;
 extern unsigned long lastGameOverTime;
 //UI Handling flags

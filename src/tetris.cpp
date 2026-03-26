@@ -10,6 +10,8 @@ Piece currPiece;
 Piece ghostPiece;
 uint8_t nextPieceShape[4][4];
 uint16_t nextPieceColor;
+bool touchGround = false;
+unsigned long lastTouchTime = 0;
 unsigned long lastDelayedFall = 0;
 unsigned long lastGameOverTime= 0 ;
 
@@ -236,16 +238,24 @@ void rotatePiece()
 
 bool delayedFallAndLogic()
 {
-  bool flag;
+  bool flag = false;
   unsigned long now = millis();
-  if(now - lastDelayedFall > 500)
+  bool willCollide = checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE);
+  if(now - lastDelayedFall > 1500 && !willCollide)
   {
-    if (!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
+    currPiece.y += GRAVITY;
+    flag = false; 
+    touchGround = false; 
+    lastDelayedFall = now;
+  }
+  else if (willCollide)
+  {
+    if(!touchGround)
     {
-       currPiece.y += GRAVITY;
-       flag = false;
-    } 
-    else
+      touchGround = true;
+      lastTouchTime = now;
+    }
+    if (now - lastTouchTime > 500) //Delay lock piece
     {
       lockPiece();
       int temp = clearLine();
@@ -269,7 +279,6 @@ bool delayedFallAndLogic()
       gameOver();
       flag = true;
     }
-    lastDelayedFall = now;
   }
   return flag;
 }
