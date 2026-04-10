@@ -1,4 +1,7 @@
 #include <Arduino.h>
+#include <WiFi.h>
+#include <esp_bt.h>
+#include <audio.h>
 #include <display.h>
 #include <tetris.h>
 #include <config.h>
@@ -60,6 +63,14 @@ void IRAM_ATTR resetISR()
 }
 
 void setup() {
+  //Turn off WiFi BLuetooth
+  WiFi.mode(WIFI_OFF);
+  btStop();
+
+  gameOverFlag = false;
+
+  initAudio();
+
   pinMode(UP, INPUT_PULLUP);
   pinMode(DOWN, INPUT_PULLUP);
   pinMode(LEFT, INPUT_PULLUP);

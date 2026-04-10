@@ -10,6 +10,7 @@
 #define LEFT 27
 #define RIGHT 33
 #define RESET 13
+#define BUZZER 32
 #define BUTTON_DEBOUNCE 100
 //Game definitions
 #define BLOCK_SIZE 20
@@ -30,4 +31,4 @@ extern volatile bool reseted;
 extern volatile unsigned long lastInterruptTime[4];
 extern volatile unsigned long lastResetInterruptTime;
 //Stop ISR flag
-extern bool gameOverFlag;
+extern volatile bool gameOverFlag;
