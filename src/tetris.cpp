@@ -130,6 +130,7 @@ bool checkCollision(u_int8_t shape[4][4], int x, int y)
 
 void movePiece()
 {
+
     if (isUp)
     {
       rotatePiece();
@@ -137,8 +138,11 @@ void movePiece()
     }
     else if (isLeft)
     {
-      if (!checkCollision(currPiece.shape, currPiece.x - BLOCK_SIZE, currPiece.y))
-        currPiece.x -= BLOCK_SIZE;
+      while (!digitalRead(DOWN))
+      {
+        if (!checkCollision(currPiece.shape, currPiece.x - BLOCK_SIZE, currPiece.y))
+          currPiece.x -= BLOCK_SIZE;
+      }
       isLeft = false;
     }
     else if (isRight)
