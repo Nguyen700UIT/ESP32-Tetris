@@ -1,6 +1,6 @@
 #include <audio.h>
 
-u_int16_t tempo = 144;
+u_int16_t tempo = 180;
 TaskHandle_t musicTask = NULL;
 
 int melody[] = {
@@ -52,12 +52,28 @@ void playMusic()
         else if (divider < 0) noteDuration = (wholeNote / abs(divider) ) * 1.5;
 
         ledcWriteTone(PWM_CHANNEL_BUZZER, melody[currNode]);
+        //Fade in
+        for (int d = 0; d <= 60; d += 5)
+        {
+            ledcWrite(PWM_CHANNEL_BUZZER, d);
+            vTaskDelay(5 / portTICK_PERIOD_MS);
+        }
+
+        
+
         vTaskDelay((noteDuration * 0.9) / portTICK_PERIOD_MS); //Chay note nhac 90%
+
+        //Fade out
+        for (int d = 60; d >= 0; d -= 5)
+        {
+            ledcWrite(PWM_CHANNEL_BUZZER, d);
+            vTaskDelay(5 / portTICK_PERIOD_MS);
+        }
 
         ledcWriteTone(PWM_CHANNEL_BUZZER, 0); //Dung note nhac
 
         vTaskDelay((noteDuration * 0.1) / portTICK_PERIOD_MS); //Note nghi 10%
-
+        
     }
 }
 
