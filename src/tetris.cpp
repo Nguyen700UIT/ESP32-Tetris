@@ -138,11 +138,8 @@ void movePiece()
     }
     else if (isLeft)
     {
-      while (!digitalRead(DOWN))
-      {
-        if (!checkCollision(currPiece.shape, currPiece.x - BLOCK_SIZE, currPiece.y))
-          currPiece.x -= BLOCK_SIZE;
-      }
+      if (!checkCollision(currPiece.shape, currPiece.x - BLOCK_SIZE, currPiece.y))
+        currPiece.x -= BLOCK_SIZE;
       isLeft = false;
     }
     else if (isRight)
@@ -153,9 +150,17 @@ void movePiece()
     }
     else if (isDown)
     {
-      if (!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
-        currPiece.y += BLOCK_SIZE;
-      isDown = false; 
+      if (digitalRead(DOWN) == LOW) //Hold
+      {
+        if (!checkCollision(currPiece.shape, currPiece.x, currPiece.y + BLOCK_SIZE))
+          currPiece.y += BLOCK_SIZE;
+        else 
+          isDown = false;  
+      }
+      else
+      {
+        isDown = false;
+      }
     }
 }
 
