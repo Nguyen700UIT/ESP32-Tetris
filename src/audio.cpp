@@ -3,7 +3,7 @@
 u_int16_t tempo = 180;
 TaskHandle_t musicTask = NULL;
 
-int melody[] = {
+const int melody[] PROGMEM = {
   
   NOTE_E5, 4,  NOTE_B4,8,  NOTE_C5,8,  NOTE_D5,4,  NOTE_C5,8,  NOTE_B4,8,
   NOTE_A4, 4,  NOTE_A4,8,  NOTE_C5,8,  NOTE_E5,4,  NOTE_D5,8,  NOTE_C5,8,
@@ -61,7 +61,7 @@ void playMusic()
 
         
 
-        vTaskDelay((noteDuration * 0.9) / portTICK_PERIOD_MS); //Chay note nhac 90%
+        vTaskDelay((noteDuration * 0.9) / portTICK_PERIOD_MS); //Chay note nhac 90% 
 
         //Fade out
         for (int d = 60; d >= 0; d -= 5)
