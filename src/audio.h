@@ -98,7 +98,7 @@
 
 extern u_int16_t tempo;
 extern TaskHandle_t musicTask;
-
+extern const int melody[] PROGMEM;
 void initAudio();
 void audioTask();
 void playMusic();
